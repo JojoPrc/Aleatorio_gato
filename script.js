@@ -1,15 +1,25 @@
-    const generateButton = document.getElementById('generateButton');
-    const catContainer = document.getElementById('catContainer');
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    generateButton.addEventListener('click', generateCat);
+const generateButton = document.getElementById('generateButton');
+const catContainer = document.getElementById('catContainer');
+const loadingSpinner = document.getElementById('loadingSpinner');
+generateButton.addEventListener('click', generateCat);
 
-    async function generateCat() {
-        if (catContainer.childElementCount >= 5) {
-            catContainer.firstElementChild.remove();
+let catCounter = 0;
+
+async function generateCat() {
+    if (catCounter >= 3) {
+        while (catContainer.firstChild) {
+            catContainer.firstChild.remove();
         }
+        catCounter = 0;
+    }
 
-        loadingSpinner.style.display = 'block';
+    if (catContainer.childElementCount >= 5) {
+        return;
+    }
 
+    loadingSpinner.style.display = 'block';
+
+    try {
         const response = await fetch('https://api.thecatapi.com/v1/images/search');
         const data = await response.json();
         const imageUrl = data[0].url;
@@ -21,4 +31,10 @@
         catContainer.appendChild(catImage);
 
         loadingSpinner.style.display = 'none';
+
+        catCounter++;
+    } catch (error) {
+        console.error('Erro ao gerar imagem de gato:', error);
+        loadingSpinner.style.display = 'none';
     }
+}
